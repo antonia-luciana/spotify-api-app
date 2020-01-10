@@ -18,6 +18,8 @@ let redirect_uri = encodeURI("http://localhost:8888/callback");
 
 app.use(function(request, response, next) {
   response.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+  response.header('Access-Control-Allow-Headers', 'Origin, Content-Type ,X-CSRF-TOKEN');
   next();
 });
 
@@ -33,9 +35,33 @@ app.get("/login", function(req, res) {
   );
 });
 
-app.get("/user", function(req, res) {
-  console.log("a");
-  res.end(JSON.stringify({ user: "A" }));
+//app.use(express.urlencoded());
+app.use(express.json());
+
+app.post("/user", function(req, res) {
+  const access_token = req.body.access_token
+  console.log("aaa", access_token );
+  request.get(
+    {
+      url: "https://accounts.spotify.com/v1/me",
+      headers: {
+        "Authorization": `Bearer ${access_token}`
+      },
+      json: true
+    },
+    function(error, response, body) {
+      //console.log(response);
+      console.log(body, response.statusCode, response.body);
+      console.log("error", error);
+      if(response.statusCode === 200 ) {
+        res.end(JSON.stringify({ user: body }));
+      } else {
+        res.end(JSON.stringify({ user: error }));
+      }
+    }
+  );
+  //res.end(JSON.stringify({ user: response }));
+  
 });
 
 app.get("/callback", function(req, res) {
