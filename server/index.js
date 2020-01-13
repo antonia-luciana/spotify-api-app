@@ -43,7 +43,7 @@ app.post("/user", function(req, res) {
   console.log("aaa", access_token );
   request.get(
     {
-      url: "https://accounts.spotify.com/v1/me",
+      url: "https://api.spotify.com/v1/me",
       headers: {
         "Authorization": `Bearer ${access_token}`
       },
